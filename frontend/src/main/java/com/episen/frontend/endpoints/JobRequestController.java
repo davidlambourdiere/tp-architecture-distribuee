@@ -15,13 +15,8 @@ public class JobRequestController {
     public static final String PATH = "/jobrequest/";
     private final JobRequestService jobRequestService;
 
-    @GetMapping
-    public ResponseEntity<Object> getJobRequest(){
-        log.info("Recu");
-        return ResponseEntity.ok().build();
-    }
-    @PostMapping(path = "")
-    public ResponseEntity<JobRequestDTO> createJobRequest(JobRequestDTO jobRequestDTO){
+    @PostMapping
+    public ResponseEntity<JobRequestDTO> createJobRequest(@RequestBody JobRequestDTO jobRequestDTO){
         log.info("Recu : {}", jobRequestDTO.toString());
         return jobRequestService.createJobRequest(jobRequestDTO);
     }
