@@ -15,13 +15,13 @@ public class JobRequestService {
     private final AmqpTemplate amqpTemplate;
 
     @Value("${mem.rabbitmq.exchange}")
-    private static String RABBITMQ_EXCHANGE;
+    private String RABBITMQ_EXCHANGE;
 
     @Value("${mem.rabbitmq.routingkey}")
-    private static String RABBITMQ_ROUTINGKEY;
+    private String RABBITMQ_ROUTINGKEY;
 
-    public ResponseEntity<JobRequestDTO> createJobRequest(JobRequestDTO jobRequestDTO) {
-        amqpTemplate.convertAndSend(RABBITMQ_EXCHANGE,RABBITMQ_ROUTINGKEY,jobRequestDTO.getId());
-        return ResponseEntity.ok(jobRequestDTO);
+    public ResponseEntity<Object> createJobRequest(JobRequestDTO jobRequest) {
+        amqpTemplate.convertAndSend(RABBITMQ_EXCHANGE,RABBITMQ_ROUTINGKEY, jobRequest.getId());
+        return ResponseEntity.ok(jobRequest);
     }
 }

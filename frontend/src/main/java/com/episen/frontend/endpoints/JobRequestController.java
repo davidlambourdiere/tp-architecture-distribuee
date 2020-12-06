@@ -4,6 +4,7 @@ import com.episen.frontend.dto.JobRequestDTO;
 import com.episen.frontend.service.JobRequestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +17,10 @@ public class JobRequestController {
     private final JobRequestService jobRequestService;
 
     @PostMapping
-    public ResponseEntity<JobRequestDTO> createJobRequest(@RequestBody JobRequestDTO jobRequestDTO){
+    public ResponseEntity<Object> createJobRequest(@RequestBody JobRequestDTO jobRequestDTO){
         log.info("Recu : {}", jobRequestDTO.toString());
+        if (jobRequestDTO.getId() == null)
+            return ResponseEntity.badRequest().body("ID can't be null");
         return jobRequestService.createJobRequest(jobRequestDTO);
     }
 
