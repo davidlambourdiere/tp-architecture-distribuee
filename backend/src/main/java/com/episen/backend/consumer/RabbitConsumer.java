@@ -1,4 +1,4 @@
-package com.episen.backend.Consumer;
+package com.episen.backend.consumer;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
