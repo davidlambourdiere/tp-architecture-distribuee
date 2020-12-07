@@ -1,6 +1,7 @@
 package com.episen.frontend.service;
 
 import com.episen.frontend.dto.JobRequestDTO;
+import com.episen.frontend.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class JobRequestService {
     private final AmqpTemplate amqpTemplate;
+    private final JobRepository jobRepository;
 
     @Value("${mem.rabbitmq.exchange}")
     private String RABBITMQ_EXCHANGE;
@@ -20,8 +22,9 @@ public class JobRequestService {
     @Value("${mem.rabbitmq.routingkey}")
     private String RABBITMQ_ROUTINGKEY;
 
-    public ResponseEntity<Object> createJobRequest(JobRequestDTO jobRequest) {
-        amqpTemplate.convertAndSend(RABBITMQ_EXCHANGE,RABBITMQ_ROUTINGKEY, jobRequest.getId());
-        return ResponseEntity.ok(jobRequest);
+    public ResponseEntity<Object> createJobRequest(JobRequestDTO jobRequestDTO) {
+        jobRepository.save(jobRequestDTO.toJobRequest());
+        amqpTemplate.convertAndSend(RABBITMQ_EXCHANGE,RABBITMQ_ROUTINGKEY, jobRequestDTO.getId());
+        return ResponseEntity.ok(jobRequestDTO);
     }
 }
