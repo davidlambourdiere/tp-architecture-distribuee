@@ -12,7 +12,11 @@ import lombok.NoArgsConstructor;
 @Builder
 public class JobRequestDTO {
     private String id;
+    private String filename;
     public JobRequest toJobRequest(){
-        return JobRequest.builder().id(id).build();
+        return JobRequest.builder()
+                .id(id)
+                .filename(filename)
+                .build();
     }
 }
