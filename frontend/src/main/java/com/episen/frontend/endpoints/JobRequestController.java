@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @RestController
 @Slf4j
 @RequestMapping(JobRequestController.PATH)
@@ -18,7 +20,6 @@ public class JobRequestController {
 
     @PostMapping
     public ResponseEntity<Object> createJobRequest(@RequestBody JobRequestDTO jobRequestDTO){
-        log.info("Recu : {}", jobRequestDTO.toString());
         if (jobRequestDTO.getId() != null)
             return ResponseEntity.badRequest().body("id field must be null");
         return jobRequestService.createJobRequest(jobRequestDTO);

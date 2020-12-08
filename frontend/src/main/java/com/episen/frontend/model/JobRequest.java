@@ -14,11 +14,11 @@ import org.springframework.data.annotation.Id;
 public class JobRequest {
     @Id
     private String id;
-    private String filename;
+    private String text;
     public JobRequestDTO toJobRequestDTO(){
         return JobRequestDTO.builder()
                 .id(id)
-                .filename(filename)
+                .text(text)
                 .build();
     }
 }
