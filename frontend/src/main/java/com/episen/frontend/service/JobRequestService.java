@@ -1,5 +1,13 @@
 package com.episen.frontend.service;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.episen.frontend.dto.JobRequestDTO;
 import com.episen.frontend.model.JobRequest;
 import com.episen.frontend.repository.JobRequestRepository;
@@ -11,15 +19,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class JobRequestService {
+    public static final String BUCKETNAME = "memdabucket";
     private final AmqpTemplate amqpTemplate;
     private final JobRequestRepository jobRequestRepository;
 
@@ -29,29 +35,37 @@ public class JobRequestService {
     @Value("${mem.rabbitmq.routingkey}")
     private String RABBITMQ_ROUTINGKEY;
 
-    @Value("${dla.jobfilepath}")
-    private String jobfilepath;
+    private AmazonS3 s3client;
+
     @PostConstruct
     public void init(){
+        AWSCredentials credentials = new BasicAWSCredentials(
+                "AKIA43D56G7Z4VW5JBTH",
+                "RmU4rg1vt5yKRJ0U4AcwVKR7oL6FFnsc4j7pcqpx"
+        );
+        s3client = AmazonS3ClientBuilder
+                .standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withRegion(Regions.EU_WEST_3)
+                .build();
+
         for(JobRequest jobRequest : jobRequestRepository.findAll()){
-            File file = new File(String.format("%s/%s.txt", jobfilepath, jobRequest.getId()));
-            file.delete();
+            log.info(jobRequest.toString());
             jobRequestRepository.delete(jobRequest);
         }
     }
 
     public ResponseEntity<Object> createJobRequest(JobRequestDTO jobRequestDTO) {
         JobRequest jobRequest = jobRequestRepository.save(jobRequestDTO.toJobRequest());
-        File file = new File(String.format("%s/%s.txt", jobfilepath, jobRequest.getId()));
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(file,false);
-            fileOutputStream.write(jobRequest.getText().getBytes());
-            fileOutputStream.close();
-            log.info("Fichier {} crée", file.getPath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        sendFileToAws(jobRequest.getFilename(), new ByteArrayInputStream(jobRequest.getText().getBytes()));
+        log.info("Fichier {} crée", jobRequest.getFilename());
         amqpTemplate.convertAndSend(RABBITMQ_EXCHANGE,RABBITMQ_ROUTINGKEY, jobRequest.getId());
         return ResponseEntity.ok(jobRequest.toJobRequestDTO());
+    }
+
+    public void sendFileToAws(String filename, InputStream inputStream){
+        if (s3client.doesBucketExistV2(BUCKETNAME)){
+            PutObjectResult putObjectResult= s3client.putObject(BUCKETNAME,filename, inputStream, new ObjectMetadata());
+        }
     }
 }
