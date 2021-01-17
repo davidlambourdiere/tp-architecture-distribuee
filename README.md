@@ -1,5 +1,6 @@
-# TP rabbitmq
-3ème année
+# TP Architecture distribuée
+*3ème année école d'ingénieur*
+## TP1 RabbitMQ
 ### Contenu du Travail Pratique
 À rendre en binôme (ou en monôme pour ceux qui le souhaitent évidemment, le 11 décembre.
 
@@ -24,3 +25,8 @@ Cerises sur le gâteau dans cet ordre (bonus évidemment)
 3. Vous implémentez la Websocket.
 
 Posez toutes les questions nécessaires.
+
+## TP2 Architecture distribuée
+Implémenter et déployer une architecture hybride comme ci dessous
+![Consigne](./instructions.png)
+
