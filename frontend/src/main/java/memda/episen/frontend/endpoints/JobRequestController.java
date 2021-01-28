@@ -1,7 +1,7 @@
-package memda.episen.endpoints;
+package memda.episen.frontend.endpoints;
 
 import memda.episen.dto.JobRequestDTO;
-import memda.episen.service.JobRequestService;
+import memda.episen.frontend.service.JobRequestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

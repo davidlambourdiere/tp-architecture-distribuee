@@ -1,6 +1,6 @@
-package memda.episen;
+package memda.episen.frontend;
 
-import memda.episen.endpoints.JobRequestController;
+import memda.episen.frontend.endpoints.JobRequestController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

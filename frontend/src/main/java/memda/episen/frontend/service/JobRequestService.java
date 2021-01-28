@@ -1,4 +1,4 @@
-package memda.episen.service;
+package memda.episen.frontend.service;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -10,7 +10,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import memda.episen.dto.JobRequestDTO;
 import memda.episen.model.JobRequest;
-import memda.episen.repository.JobRequestRepository;
+import memda.episen.frontend.repository.JobRequestRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
