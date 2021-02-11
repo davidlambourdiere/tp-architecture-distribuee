@@ -8,24 +8,19 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
-import com.episen.backend.repository.JobRequestRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import memda.episen.dto.JobRequestDTO;
 import memda.episen.model.JobRequest;
 import memda.episen.utils.Task;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -34,7 +29,7 @@ public class RabbitConsumer {
 
     public static final String BUCKETNAME = "memdabucket";
 
-    private final JobRequestRepository jobRequestRepository;
+    private RestTemplate restTemplate = new RestTemplate();
 
     private AmazonS3 s3client;
 
@@ -53,20 +48,19 @@ public class RabbitConsumer {
     @RabbitListener(queues="${mem.rabbitmq.queue}")
     public void recievedMessage(String msg) throws IOException {
         log.info("Job request id={}", msg);
-        Optional<JobRequest> optionalJobRequest = jobRequestRepository.findById(msg);
-        if(optionalJobRequest.isPresent()) {
-            JobRequest jobRequest = optionalJobRequest.get();
-            S3Object s3Object = getFileFromAws(jobRequest.getFilename());
-            Scanner scanner = new Scanner(s3Object.getObjectContent());
-            String output = "";
-            while (scanner.hasNextLine()){
-                String x = scanner.nextLine();
-                if (jobRequest.getTask() == Task.UPPERCASE)
-                    x = x.toUpperCase();
-                else if (jobRequest.getTask() == Task.LOWERCASE)
-                    x = x.toLowerCase();
-                output += x + "\n";
-            }
+        JobRequest jobRequest = restTemplate
+                .getForObject("http://localhost:8083/data/jobrequest/{id}", JobRequest.class, msg);//Data Access Layer
+        S3Object s3Object = getFileFromAws(jobRequest.getFilename());
+        Scanner scanner = new Scanner(s3Object.getObjectContent());
+        String output = "";
+        while (scanner.hasNextLine()){
+            String x = scanner.nextLine();
+            if (jobRequest.getTask() == Task.UPPERCASE)
+                x = x.toUpperCase();
+            else if (jobRequest.getTask() == Task.LOWERCASE)
+                x = x.toLowerCase();
+            output += x + "\n";
+
             sendFileToAws(jobRequest.getFilename(),new ByteArrayInputStream(output.trim().getBytes()));
 
         }
