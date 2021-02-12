@@ -1,5 +1,6 @@
 package memda.episen.frontend.endpoints;
 
+import memda.episen.dto.FileDTO;
 import memda.episen.dto.JobRequestDTO;
 import memda.episen.frontend.service.JobRequestService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(JobRequestController.PATH)
 @RequiredArgsConstructor
 public class JobRequestController {
-    public static final String PATH = "/jobrequest/";
+    public static final String PATH = "/jobrequest";
     private final JobRequestService jobRequestService;
 
     @PostMapping
@@ -21,5 +22,10 @@ public class JobRequestController {
             return ResponseEntity.badRequest().body("id field must be null");
         return jobRequestService.createJobRequest(jobRequestDTO);
     }
+
+/*    @GetMapping("/{jobrequestid}")
+    public ResponseEntity<FileDTO> getJobRequestResult(@PathVariable("jobrequestid") String jobrequestid){
+        return jobRequestService.getJobRequestResult(jobrequestid);
+    }*/
 
 }

@@ -22,7 +22,7 @@ public class FsAccessController {
     }
 
     @GetMapping("/{filename}")
-    public ResponseEntity<FileDTO> getJobRequestById(@PathVariable("filename") String filename){
+    public ResponseEntity<FileDTO> getFileByFilename(@PathVariable("filename") String filename){
         return fsAccessService.getFileByFilename(filename);
     }
 

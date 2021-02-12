@@ -19,6 +19,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 
 @Service
 @Slf4j
@@ -74,6 +75,11 @@ public class JobRequestService {
         return ResponseEntity.ok(jobRequest.toJobRequestDTO());
     }
 
+/*    public ResponseEntity<FileDTO> getJobRequestResult(String jobrequestid) {
+        JobRequest jobRequest = restTemplate.getForObject("localhost:8083/data/jobrequest/"+jobrequestid,JobRequest.class);
+        return ResponseEntity.ok(restTemplate.getForObject("localhost:8084/files/"+jobRequest.getFilename(),FileDTO.class));
+    }*/
+
     public void sendFileToAws(String filename, String content){
         FileDTO fileDTO = FileDTO.builder()
                 .filename(filename)
@@ -81,4 +87,6 @@ public class JobRequestService {
                 .build();
         restTemplate.postForLocation("http://localhost:8084/files/", fileDTO);
     }
+
+
 }
